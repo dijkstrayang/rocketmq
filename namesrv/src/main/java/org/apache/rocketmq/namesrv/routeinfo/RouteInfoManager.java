@@ -49,10 +49,17 @@ public class RouteInfoManager {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.NAMESRV_LOGGER_NAME);
     private final static long BROKER_CHANNEL_EXPIRED_TIME = 1000 * 60 * 2;
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    /**
+     * topic路由信息
+     */
     private final HashMap<String/* topic */, List<QueueData>> topicQueueTable;
+    // broker节点信息
     private final HashMap<String/* brokerName */, BrokerData> brokerAddrTable;
+    // broker集群信息
     private final HashMap<String/* clusterName */, Set<String/* brokerName */>> clusterAddrTable;
+    // broker状态信息
     private final HashMap<String/* brokerAddr */, BrokerLiveInfo> brokerLiveTable;
+    // 过滤服务器,一种服务端过滤方式
     private final HashMap<String/* brokerAddr */, List<String>/* Filter Server */> filterServerTable;
 
     public RouteInfoManager() {
@@ -753,6 +760,9 @@ public class RouteInfoManager {
 }
 
 class BrokerLiveInfo {
+    /**
+     * 上次更新状态的时间戳， NameServer 会定期检查这个时间戳，超时没有更新就认为这个Broker 无效了，将其从Broker 列表里清除。
+     */
     private long lastUpdateTimestamp;
     private DataVersion dataVersion;
     private Channel channel;
